@@ -7,7 +7,7 @@ const projects = [
 export function ProjectsPage() {
   return (
     <div className="space-y-4">
-      <h2 className="text-2xl font-bold">Projects</h2>
+      <h2 className="text-2xl font-bold">Issues</h2>
       <div className="grid gap-4">
         {projects.map((project) => (
           <div key={project.id} className="bg-white p-4 rounded shadow">

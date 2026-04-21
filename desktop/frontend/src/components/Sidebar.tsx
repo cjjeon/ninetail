@@ -1,12 +1,27 @@
-import { useState } from "react";
+import {useEffect, useState} from "react";
+import ChevronDoubleLeft from "@/icons/ChevronDoubleLeft";
+import ChevronDoubleRight from "@/icons/ChevronDoubleRight";
+import {Project, useProjectStore} from "@/stores";
 
 interface SidebarProps {
-  activePage: "projects" | "settings";
-  onNavigate: (page: "projects" | "settings") => void;
+  activePage: "issues" | "settings";
+  onNavigate: (page: "issues" | "settings") => void;
 }
 
 export function Sidebar({ activePage, onNavigate }: SidebarProps) {
   const [collapsed, setCollapsed] = useState(false);
+  const {projects, selectedProject, fetchProjects, setSelectedProject} = useProjectStore();
+  console.log(projects)
+
+  useEffect(() => {
+    fetchProjects()
+  }, [fetchProjects])
+
+  useEffect(() => {
+    if (!selectedProject && projects.length > 0) {
+      setSelectedProject(projects[0].id)
+    }
+  }, [projects, selectedProject, setSelectedProject])
 
   return (
     <aside
@@ -15,22 +30,34 @@ export function Sidebar({ activePage, onNavigate }: SidebarProps) {
       }`}
     >
       <div className="p-4 border-b border-slate-700 flex items-center justify-between">
-        {!collapsed && <h1 className="text-xl font-bold">NineTail</h1>}
+        {!collapsed && (
+          <select
+            value={selectedProject}
+            onChange={(e) => setSelectedProject(e.target.value)}
+            className="bg-slate-800 text-white text-sm px-2 py-1 rounded border border-slate-600 w-full mr-2"
+          >
+            {projects.map((project) => (
+              <option key={project.id} value={project.id}>
+                {project.name}
+              </option>
+            ))}
+          </select>
+        )}
         <button
           onClick={() => setCollapsed(!collapsed)}
           className="p-1 hover:bg-slate-700 rounded"
         >
-          {collapsed ? "▶" : "◀"}
+          {collapsed ? <ChevronDoubleRight /> : <ChevronDoubleLeft />}
         </button>
       </div>
       <nav className="flex-1 p-2">
         <button
-          onClick={() => onNavigate("projects")}
+          onClick={() => onNavigate("issues")}
           className={`w-full text-left px-4 py-2 rounded overflow-hidden whitespace-nowrap ${
-            activePage === "projects" ? "bg-slate-700" : "hover:bg-slate-800"
+            activePage === "issues" ? "bg-slate-700" : "hover:bg-slate-800"
           }`}
         >
-          {!collapsed && "Projects"}
+          {!collapsed && "Issues"}
         </button>
       </nav>
       <div className="p-2 border-t border-slate-700">
